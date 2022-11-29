@@ -163,7 +163,7 @@ End Sub
 'return one URL for each downloadhandler
 Sub App_startDownload(jobNr As Int)
 	Dim cur() As String = repositories.get(jobNr - 1)
-	App.Download("https://api.github.com/repos/" & cur(0))
+	App.Download("https://github.com/" & cur(0))
 End Sub
 
 'process the response from each download handler
@@ -176,10 +176,11 @@ Sub App_evalJobResponse(Resp As JobResponse)
 			Dim pair(3) As String = repositories.get(Resp.jobNr - 1)
 			oldStarList.Set(Resp.jobNr - 1, pair(2))
 
-			Dim parser As JSONParser
-			parser.Initialize(Resp.ResponseString)
-			Dim root As Map = parser.NextObject
-			pair(2) = root.Get("watchers")
+			Dim matcher As Matcher
+			matcher = Regex.Matcher("<span.*?repo-stars-counter-star.*?>(\d+?)</span>", Resp.ResponseString)
+			If matcher.Find And matcher.GroupCount == 1 Then
+				pair(2) = matcher.Group(1)
+			End If
 			repositories.Set(Resp.jobNr - 1, pair)
 		End If
 	Catch
