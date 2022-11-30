@@ -217,7 +217,7 @@ End Sub
 
 'this sub is called right before AWTRIX will display your App
 Sub App_iconRequest
-	App.Icons = Array As Int(App.get("TemperatureIconID"), App.get("HumidityIconID"), App.get("CalendarIconID"), App.get("IconIconID"), 349,486,346,345,244, 487, 2)
+	App.Icons = Array As Int(App.get("TemperatureIconID"), App.get("HumidityIconID"), App.get("CalendarIconID"), App.get("IconIconID"), 2042,2043,2044,2045,2046,2047,2048,2049, 487, 2)
 End Sub
 
 Sub App_genFrame
@@ -541,15 +541,17 @@ Private Sub widget_weather(offset As Int)
 	Dim xpos As Int = 19
 
 	If weatherFromWeb.IndexOf("晴") >= 0 Then
-		App.drawBMP(xpos+2,offset,App.getIcon(349),8,8)
+		App.drawBMP(xpos,offset,App.getIcon(2048),8,8)
+		App.drawBMP(xpos+5,offset,App.getIcon(2043),8,8)
 	Else If weatherFromWeb.IndexOf("云") >= 0 Then
-		App.drawBMP(xpos+2,offset,App.getIcon(486),8,8)
+		App.drawBMP(xpos,offset,App.getIcon(2049),8,8)
+		App.drawBMP(xpos+5,offset,App.getIcon(2045),8,8)
 	Else If weatherFromWeb.IndexOf("雨") >= 0 Then
-		App.drawBMP(xpos+2,offset,App.getIcon(346),8,8)
-	Else If weatherFromWeb.IndexOf("雷") >= 0 Then
-		App.drawBMP(xpos+2,offset,App.getIcon(345),8,8)
+		App.drawBMP(xpos,offset,App.getIcon(2047),8,8)
+		App.drawBMP(xpos+5,offset,App.getIcon(2044),8,8)
 	Else If weatherFromWeb.IndexOf("雪") >= 0 Then
-		App.drawBMP(xpos+2,offset,App.getIcon(244),8,8)
+		App.drawBMP(xpos,offset,App.getIcon(2046),8,8)
+		App.drawBMP(xpos+5,offset,App.getIcon(2042),8,8)
 	Else
 		Log("Not found weather icon:" & weatherFromWeb)
 		App.drawBMP(xpos+2,offset,App.getIcon(487),8,8)

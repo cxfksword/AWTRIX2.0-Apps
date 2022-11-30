@@ -43,7 +43,7 @@ End Sub
 Public Sub update
 	If Scrolling Then
 		If Offset<8 Then
-			Offset=Offset+1
+			Offset= Min(Offset + Max(Offset, 1)*1.5, 8)
 		Else
 			Scrolling = False
 			Offset=0
