@@ -12,7 +12,6 @@ Sub Class_Globals
 	Private displaylist As List
 	Private repositories As List
 	Private icon As Int = 514
-	Private oldStarList As List
 End Sub
 
 ' ignore
@@ -77,30 +76,29 @@ Sub ParseSettings
 	'pairs
 	Dim down As Int
 	repositories.Initialize
-	oldStarList.Initialize
 	
 	If ValidateSettings Then
 		Dim RepositorySplit() As String = Regex.Split(",", App.get("Repositories"))
 		down = RepositorySplit.Length
-		For Each pair As String In RepositorySplit
-			Dim temp(3) As String
-			Dim DisplaySplit() As String =  Regex.Split("@", pair)
+		For Each repo As String In RepositorySplit
+			Dim pair(4) As String
+			Dim DisplaySplit() As String =  Regex.Split("@", repo)
 			'repo
-			temp(0) = DisplaySplit(0).Trim
+			pair(0) = DisplaySplit(0).Trim
 			'display name
 			If DisplaySplit.Length == 1 Then
-				temp(1) = DisplaySplit(0).Trim
+				pair(1) = DisplaySplit(0).Trim
 				Dim repoNameSplit() As String =  Regex.Split("/", DisplaySplit(0))
 				If repoNameSplit.Length == 2 Then
-					temp(1) = repoNameSplit(1).Trim
+					pair(1) = repoNameSplit(1).Trim
 				End If
 			Else
-				temp(1) = DisplaySplit(1).Trim
+				pair(1) = DisplaySplit(1).Trim
 			End If
 			'save result
-			temp(2) = ""
-			repositories.add(temp)
-			oldStarList.add("")
+			pair(2) = "" ' old star count
+			pair(3) = "" ' new star count
+			repositories.add(pair)
 		Next
 	Else
 		down = 0
@@ -118,8 +116,7 @@ End Sub
 
 'this sub is called right before AWTRIX will display your App
 Sub App_Started
-	Dim pair(3) As String
-	Dim oldStar As String
+	Dim pair(4) As String
 	displaylist.Initialize
 	
 	
@@ -127,11 +124,10 @@ Sub App_Started
 		For i = 0 To repositories.Size - 1
 			pair = repositories.Get(i)
 			If App.get("DisplayWhenGotNewStar") Then
-				oldStar = oldStarList.Get(i)
-				If pair(2) <> oldStar Then
+				If pair(2) <> pair(3) Then
 					Dim frame As FrameObject
 					frame.Initialize
-					frame.text = pair(1) & " " & pair(2)
+					frame.text = pair(1) & " " & pair(3)
 					frame.TextLength = App.calcTextLength(frame.text)
 					frame.color = Null
 					frame.Icon = icon
@@ -140,7 +136,7 @@ Sub App_Started
 			Else
 				Dim frame As FrameObject
 				frame.Initialize
-				frame.text = pair(1) & " " & pair(2)
+				frame.text = pair(1) & " " & pair(3)
 				frame.TextLength = App.calcTextLength(frame.text)
 				frame.color = Null
 				frame.Icon = icon
@@ -173,13 +169,13 @@ End Sub
 Sub App_evalJobResponse(Resp As JobResponse)
 	Try
 		If Resp.success Then
-			Dim pair(3) As String = repositories.get(Resp.jobNr - 1)
-			oldStarList.Set(Resp.jobNr - 1, pair(2))
+			Dim pair(4) As String = repositories.get(Resp.jobNr - 1)
+			pair(2) = pair(3) ' save old star count
 
 			Dim matcher As Matcher
 			matcher = Regex.Matcher("<span.*?repo-stars-counter-star.*?>(\d+?)</span>", Resp.ResponseString)
 			If matcher.Find And matcher.GroupCount == 1 Then
-				pair(2) = matcher.Group(1)
+				pair(3) = matcher.Group(1)  ' save new star count
 			End If
 			repositories.Set(Resp.jobNr - 1, pair)
 		End If
