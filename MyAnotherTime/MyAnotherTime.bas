@@ -529,7 +529,7 @@ Private Sub widget_aqi(offset As Int)
 	
 	Dim xpos As Int = 19
 	
-	App.drawText(airQualityFromWeb,xpos,offset,Null)
+	App.drawText(airQualityFromWeb,xpos,offset,parseColor("#e64c4a", Null))
 End Sub
 
 Private Sub widget_weather(offset As Int)
